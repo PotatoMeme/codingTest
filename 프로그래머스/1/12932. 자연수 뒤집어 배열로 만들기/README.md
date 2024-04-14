@@ -1,10 +1,10 @@
 # [level 1] 자연수 뒤집어 배열로 만들기 - 12932 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/12932?language=kotlin) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/12932?language=java) 
 
 ### 성능 요약
 
-메모리: 61.2 MB, 시간: 8.04 ms
+메모리: 72.3 MB, 시간: 2.49 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2024년 04월 14일 10:21:47
+2024년 04월 15일 08:36:44
 
 ### 문제 설명
 
