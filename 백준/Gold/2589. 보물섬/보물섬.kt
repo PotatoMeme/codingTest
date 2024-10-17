@@ -1,82 +1,83 @@
-import java.util.LinkedList
-import java.util.Queue
+import java.io.BufferedReader
+import java.util.*
 
-data class PosData(
-    val x: Int,
-    val y: Int,
-    val w: Int = 0, // 이동 거리를 추적하기 위한 필드
-) {
-    operator fun plus(posData: PosData): PosData {
-        return PosData(this.x + posData.x, this.y + posData.y, this.w + 1)
-    }
-}
+fun main() = println(No2589().solve(System.`in`.bufferedReader()))
 
-val direction = arrayOf(
-    PosData(1, 0),
-    PosData(0, 1),
-    PosData(-1, 0),
-    PosData(0, -1),
-)
+class No2589 {
+    private val directions = arrayOf(-1 to 0, 1 to 0, 0 to -1, 0 to 1)
 
-fun main() = with(System.`in`.bufferedReader()) {
-    val (n, m) = readLine().split(" ").map { it.toInt() }
-    
-    // 육지 여부를 나타내는 지도 정보
-    val graph = Array(n) { readLine().toCharArray().map { it == 'L' }.toBooleanArray() }
-    var maxDistance = 0
+    fun solve(input: BufferedReader): String {
+        val (n, m) = input.readLine().split(" ").map { it.toInt() }
+        val map = Array(n) { input.readLine().toCharArray() }
+        var maxDistance = 0
 
-    fun bfs(startX: Int, startY: Int): Int {
-        val visited = Array(n) { BooleanArray(m) { false } }
-        val q: Queue<PosData> = LinkedList()
-        var maxDist = 0
-
-        q.add(PosData(startX, startY))
-        visited[startX][startY] = true
-
-        var l1Pos = PosData(startX, startY)
-
-        // 첫 번째 BFS로 가장 먼 지점(L1)을 찾음
-        while (q.isNotEmpty()) {
-            val pos = q.poll()
-            l1Pos = pos // 가장 먼 지점을 갱신
-            for (d in direction) {
-                val next = pos + d
-                if (next.x in 0 until n && next.y in 0 until m && !visited[next.x][next.y] && graph[next.x][next.y]) {
-                    q.add(next)
-                    visited[next.x][next.y] = true
+        // L1 찾기 (모든 육지에서 가장 먼 육지를 L1으로 설정)
+        for (i in 0 until n) {
+            for (j in 0 until m) {
+                if (map[i][j] == 'L') {
+                    val l1Pos = bfs(map, i, j)  // L1 찾기
+                    val l2Distance = bfsDistance(map, l1Pos.first, l1Pos.second) // L1에서 L2로의 거리 찾기
+                    maxDistance = maxDistance.coerceAtLeast(l2Distance)
                 }
             }
         }
 
-        // 두 번째 BFS로 L1에서 가장 먼 지점(L2) 찾기
-        q.add(l1Pos.copy(w = 0)) // L1에서 시작
-        visited.forEach { it.fill(false) } // 방문 배열 초기화
-        visited[l1Pos.x][l1Pos.y] = true
+        return maxDistance.toString()
+    }
 
-        while (q.isNotEmpty()) {
-            val pos = q.poll()
-            maxDist = pos.w // 최종 거리를 갱신
-            for (d in direction) {
-                val next = pos + d
-                if (next.x in 0 until n && next.y in 0 until m && !visited[next.x][next.y] && graph[next.x][next.y]) {
-                    q.add(next)
-                    visited[next.x][next.y] = true
-                }
+    // L1에서 L2까지의 거리만 계산
+    private fun bfsDistance(map: Array<CharArray>, x: Int, y: Int): Int {
+        val visited = Array(map.size) { BooleanArray(map[0].size) }
+        val queue = ArrayDeque<Triple<Int, Int, Int>>()  // 좌표와 거리 저장
+        var maxDistance = 0
+
+        visited[x][y] = true
+        queue.add(Triple(x, y, 0))
+
+        while (queue.isNotEmpty()) {
+            val (curX, curY, dist) = queue.removeFirst()
+            maxDistance = dist
+
+            for ((dx, dy) in directions) {
+                val nx = curX + dx
+                val ny = curY + dy
+
+                if (nx !in map.indices || ny !in map[0].indices) continue
+                if (map[nx][ny] == 'W' || visited[nx][ny]) continue
+
+                visited[nx][ny] = true
+                queue.add(Triple(nx, ny, dist + 1))
             }
         }
 
-        return maxDist
+        return maxDistance
     }
 
-    // 모든 육지에서 BFS 시작
-    for (i in 0 until n) {
-        for (j in 0 until m) {
-            if (graph[i][j]) { // 육지일 경우
-                val bfsResult = bfs(i, j)
-                maxDistance = maxOf(maxDistance, bfsResult)
+    // BFS로 L1 좌표 찾기
+    private fun bfs(map: Array<CharArray>, x: Int, y: Int): Pair<Int, Int> {
+        val visited = Array(map.size) { BooleanArray(map[0].size) }
+        val queue = ArrayDeque<Pair<Int, Int>>()
+        var l1Pos = x to y
+
+        visited[x][y] = true
+        queue.add(x to y)
+
+        while (queue.isNotEmpty()) {
+            val (curX, curY) = queue.removeFirst()
+            l1Pos = curX to curY  // 마지막에 남은 좌표가 가장 먼 좌표 (L1)
+
+            for ((dx, dy) in directions) {
+                val nx = curX + dx
+                val ny = curY + dy
+
+                if (nx !in map.indices || ny !in map[0].indices) continue
+                if (map[nx][ny] == 'W' || visited[nx][ny]) continue
+
+                visited[nx][ny] = true
+                queue.add(nx to ny)
             }
         }
-    }
 
-    println(maxDistance)
+        return l1Pos  // 가장 먼 좌표 (L1) 반환
+    }
 }
