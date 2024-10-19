@@ -11,18 +11,26 @@ fun main() {
         tree[b].add(a)
     }
 
-    dfs(1, tree, parent)
+    bfs(1, tree, parent)
 
     for (i in 2..n) {
         println(parent[i])
     }
 }
 
-fun dfs(node: Int, tree: Array<MutableList<Int>>, parent: IntArray) {
-    for (child in tree[node]) {
-        if (parent[child] == 0) { 
-            parent[child] = node  
-            dfs(child, tree, parent)
+fun bfs(start: Int, tree: Array<MutableList<Int>>, parent: IntArray) {
+    val queue: Queue<Int> = LinkedList()
+    queue.add(start)
+    parent[start] = -1  
+
+    while (queue.isNotEmpty()) {
+        val node = queue.poll()
+
+        for (child in tree[node]) {
+            if (parent[child] == 0) {  
+                parent[child] = node  
+                queue.add(child) 
+            }
         }
     }
 }
