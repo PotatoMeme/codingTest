@@ -8,11 +8,11 @@ fun main() {
         var sum = 0
         if (input[1] == 'x') { // 16
             for (i in 2 until input.length) {
-                sum = (sum shl 4) + (input[i].digitToInt(16))
+                sum = (sum * 16) + (input[i].digitToInt(16))
             }
         } else {//8
             for (i in 1 until input.length) {
-                sum = (sum shl 3) + (input[i].digitToInt(8))
+                sum = (sum shl 3) + (input[i] - '0')
             }
         }
         print(sum)
