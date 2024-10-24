@@ -11,7 +11,7 @@ fun main() {
     val (n, m) = input.split(" ").map { it.toInt() }
 
     //keywords
-    val mutableSet = mutableSetOf<String>()
+    val mutableSet = hashSetOf<String>()
     repeat(n){
         mutableSet.add(readln())
     }
