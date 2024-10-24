@@ -12,16 +12,14 @@ fun main() {
 
     //keywords
     val mutableSet = hashSetOf<String>()
-    repeat(n){
+    repeat(n) {
         mutableSet.add(readln())
     }
 
     val sb = StringBuilder()
-    repeat(m){
-        val st = StringTokenizer(readln(),",")
-        while(st.hasMoreTokens()){
-            mutableSet.remove(st.nextToken())
-        }
+    repeat(m) {
+        val list = readln().split(",")
+        for (str in list) mutableSet.remove(str)
         sb.appendLine(mutableSet.size)
     }
     print(sb)
